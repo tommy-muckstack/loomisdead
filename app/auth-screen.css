@@ -75,3 +75,5 @@
 .au--su{background:#e3f3ff!important}.au--su .au-top{background:transparent}.au--su .au-topcta{display:none}.au--su .au-main{padding-top:28px}.au--su .au-form{padding:40px 48px}
 .au--su .au-form h1{font-size:30px;line-height:34px;padding:0 4px}.au--su .au-note{display:none}
 .au-quote{font-weight:600;color:#505258;max-width:400px;font-size:14px;line-height:21px}
+
+.au-by{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px auto 0}.au-by i{width:28px;height:28px;border-radius:50%;background:#c9cdd6;display:block}.au-by span{display:flex;flex-direction:column;text-align:left;font-size:12px;line-height:16px;color:#292a2e}.au-by b{font-weight:600}.au-by small{font-size:11px;color:#6b6f76}

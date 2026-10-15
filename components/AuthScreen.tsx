@@ -78,7 +78,7 @@ export function AuthScreen({ config, demo, to, signup = false, cfg }: { config: 
     {!loomSu && switchEl}
     {cfg.footerNote && <p className="au-legal">{cfg.footerNote}</p>}
   </div>;
-  const quote = loomSu ? <>{switchEl}<p className="au-quote">“Two minutes of video beats a thirty-minute meeting. Record it once, share a link, move on.”</p></> : null;
+  const quote = loomSu ? <>{switchEl}<p className="au-quote">“Two minutes of video beats a thirty-minute meeting. Record it once, share a link, move on.”</p><div className="au-by"><i aria-hidden /><span><b>An early user</b><small>Sample testimonial</small></span></div></> : null;
   const artEl = art && <aside className={`au-art au-art--${art.kind}`} style={{ background: art.bg, color: art.fg }}><div>{art.title && <h2>{art.title}</h2>}{art.sub && <p>{art.sub}</p>}
     {art.blocks && <div className="au-blocks">{art.blocks.map((c, i) => <i key={i} style={{ background: c, height: 60 + (i * 37) % 90 }} />)}</div>}</div></aside>;
   return <main className={`au au--${cfg.layout}${mode === "signup" ? " au--su" : ""}`} style={style}>
