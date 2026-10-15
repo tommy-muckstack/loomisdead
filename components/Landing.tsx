@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { PricingBody } from "@/components/PricingBody";
+import { pricingCfg } from "@/components/pricingCfg";
 import { Logo } from "@/components/Logo";
 import { BP } from "@/lib/basepath";
 import "@/app/landing.css";
@@ -14,8 +16,8 @@ const cases = [["Sales", "Personalize your pitch with video outreach to close mo
 const feats = ["Screen and camera recording", "Easy sharing and embedding", "Trim and stitch video clips", "Download and upload", "Transcriptions and closed captions", "Video privacy controls", "Custom background", "Video and viewer insights"];
 const foot: [string, string[]][] = [["App", ["Pricing", "Open source", "Screen recorder", "Screenshot", "Chrome recorder", "Mac recorder", "Windows recorder", "iPhone recorder", "Android recorder"]], ["Solutions", ["Sales", "Engineering", "Design", "Marketing", "Product management", "Support", "Presentation", "Team alignment", "Education", "Webcam recorder"]], ["For business", ["Self-hosting", "Open source", "Library", "Customer stories", "Security", "Video hosting", "Video library"]], ["Downloads", ["Browser recorder", "Chrome extension", "Mobile web"]], ["Resources", ["The blog", "Help center", "Community", "Guides", "Status", "What's new", "Mic test", "Webcam recorder"]], ["Company", ["About", "Contributing", "Careers", "Newsroom", "Media kit", "vs Vidyard", "vs Zoom Clips", "vs Clipchamp", "Sitemap", "Privacy policy"]]];
 
-export function Landing() {
-  return <div className="lp">
+export function Landing({ page }: { page?: "pricing" } = {}) {
+  return <div className={"lp" + (page === "pricing" ? " is-pr" : "")}>
     <header className="lp-hd">
       <div className="lp-banner"><span>NEW: Record it in the browser. Share it as a link. Turn visual walkthroughs into answers in minutes. Try it free today <Arrow /></span><button aria-label="Dismiss" className="lp-x">×</button></div>
       <nav className="lp-nav">
@@ -78,6 +80,7 @@ export function Landing() {
     <section className="lp-quotes"><div className="lp-quote lp-quote--side" /><div className="lp-quote"><button aria-label="Previous" className="lp-arrow lp-arrow--l">←</button><div className="lp-quote__logo"><i /><i /><i />Sevenseven</div><blockquote>“This tool has been the light of my life since you showed me it.” – I never tire of hearing this from folks. Not even an investor… yet.”</blockquote><div className="lp-quote__who"><Person cls="lp-quote__ph" /><div><b>Alex Ohanian</b><small>Founder, Sevenseven</small></div></div><button aria-label="Next" className="lp-arrow lp-arrow--r">→</button></div><div className="lp-quote lp-quote--side" /></section>
 
     <aside className="lp-cta"><div className="lp-cta__box"><p>Loom powers great campaigns.</p><div><Link className="lp-btn lp-btn--blue lp-btn--lg" href="/login?mode=signup">Get Loom for free</Link><small>For Mac, Windows, iOS, and Android</small></div></div></aside>
+    {page === "pricing" && <PricingBody cfg={pricingCfg} />}
 
     <footer className="lp-ft">
       <div className="lp-ft__cols">{foot.map(([h, ls]) => <div key={h}><h4>{h}</h4>{ls.map(l => <Link key={l} href="/login">{l}</Link>)}</div>)}</div>
