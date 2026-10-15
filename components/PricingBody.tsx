@@ -1,5 +1,6 @@
 import Link from "next/link";
 import "@/app/pricing-body.css";
+import "@/app/pricing-lm-m.css";
 import { PbCollapse } from "@/components/PbCollapse";
 import matrix from "@/lib/loomMatrix.json";
 
@@ -17,6 +18,18 @@ export type PBCfg = {
 const Nw = (t: string) => t.endsWith(" NEW") ? <>{t.slice(0, -4)}<em className="pb-new">NEW</em></> : <>{t}</>;
 const Mark = ({ on }: { on: boolean }) => on ? <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" strokeWidth="2" /></svg> : <i aria-hidden>–</i>;
 
+type MxRow = { g?: string; l?: string; n?: number; v?: string[] };
+// Phone layout: each plan card expands to every feature that plan includes, grouped like the compare matrix.
+function allFor(i: number) {
+  const groups: [string, string[]][] = [];
+  for (const r of matrix as MxRow[]) {
+    if (r.g !== undefined) { groups.push([r.g.replace(/^Try for free! /, ""), []]); continue; }
+    const v = r.v?.[i]; if (!v || !r.l || !groups.length) continue;
+    groups[groups.length - 1][1].push(v === "Included" ? r.l : `${v} ${r.l}`);
+  }
+  return groups.filter(([, rows]) => rows.length).map(([g, rows]) => <div key={g} className="pb-all__g"><strong>{g}</strong><ul>{rows.map(x => <li key={x}>{x}</li>)}</ul></div>);
+}
+
 export function PricingBody({ cfg }: { cfg: PBCfg }) {
   const { plans } = cfg; const nc = cfg.cols.length;
   return <div className={"pb" + (cfg.matrix ? " pb--lm" : "")} style={cfg.vars as React.CSSProperties}>
@@ -29,9 +42,11 @@ export function PricingBody({ cfg }: { cfg: PBCfg }) {
         <div className="pb-price"><b>{p.price}</b>{p.per && <small>{p.per}</small>}</div>
         <Link className="pb-btn" href="/login">{p.cta}</Link>
         {p.lead && <h4>{p.lead}</h4>}
-        <ul>{p.feats.map(f => <li key={f}><Mark on /><span>{Nw(f)}</span></li>)}</ul></article>)}
+        <ul>{p.feats.map(f => <li key={f}><Mark on /><span>{Nw(f)}</span></li>)}</ul>
+        {cfg.matrix && <details className="pb-all"><summary>See all features</summary>{allFor(plans.indexOf(p))}</details>}</article>)}
     </section>
     {cfg.extra && <section className="pb-extra"><div><h2>{cfg.extra.title}</h2><p>{cfg.extra.text}</p>{cfg.extra.bullets && <ul>{cfg.extra.bullets.map(b => <li key={b}>{cfg.matrix && <Mark on />}<span>{Nw(b)}</span></li>)}</ul>}<Link className="pb-btn pb-btn--p" href="/login">{cfg.extra.cta}</Link></div><div className="pb-extra__art" aria-hidden><i /><i /><i /></div></section>}
+    {cfg.matrix && <p className="pb-stu"><svg width="26" height="18" viewBox="0 0 26 18" aria-hidden><circle cx="6" cy="10" r="5" fill="none" stroke="currentColor" strokeWidth="2" /><circle cx="20" cy="10" r="5" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M11 9h4M1 8l2-6M25 8l-2-6" fill="none" stroke="currentColor" strokeWidth="2" /></svg><span>Are you a student or teacher? <Link href="/login">Try our discounted plan</Link>.</span></p>}
     {cfg.matrix && <section className="pb-mx"><table><thead><tr><th />{cfg.cols.map((c, i) => <th key={c} className={i === 2 ? "hot" : ""}>{c}<Link href="/login">{plans[i]?.cta}</Link></th>)}</tr></thead><tbody>
       {(matrix as { g?: string; l?: string; n?: number; v?: string[] }[]).map((r, i) => r.g !== undefined
         ? <tr key={i} className="g"><th colSpan={5}>{r.g.startsWith("Try for free! ") ? <><Link href="/login">Try for free!</Link><h3>{r.g.slice(14)}</h3></> : <h3>{r.g}</h3>}</th></tr>
