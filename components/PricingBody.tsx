@@ -10,11 +10,7 @@ export type PBCfg = {
   tableTitle: string; cols: string[]; groups: [string, string[]][];
   faqTitle: string; faqs: [string, string][];
   cta?: { title: string; btn: string };
-  fill?: number; fillMobile?: number;
 };
-const NOUNS = ["Workspace","Folder","Project","Dashboard","Report","Integration","Template","Automation","Notification","Export","Import","Search","Permission","Role","Audit log","Webhook","API access","Backup","Retention","Branding","Analytics","Comment","Share link","Mobile app","Desktop app","Offline mode","Version history","Tagging","Filter","Bulk action","Custom field","Approval","Reminder","Calendar sync","Email digest","Two-factor sign-in","Single sign-on","Domain control","Data residency","Support channel"];
-const KINDS = ["limits","controls","options","history"];
-const fillGroups = (n: number): [string, string[]][] => { const out: [string, string[]][] = []; let k = 0; while (k < n) { const rows: string[] = []; for (let i = 0; i < 12 && k < n; i++, k++) rows.push(NOUNS[k % NOUNS.length] + " " + KINDS[Math.floor(k / NOUNS.length) % KINDS.length]); out.push(["More features, part " + (out.length + 1), rows]); } return out; };
 const Mark = ({ on }: { on: boolean }) => on ? <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" strokeWidth="2" /></svg> : <i aria-hidden>–</i>;
 
 export function PricingBody({ cfg }: { cfg: PBCfg }) {
@@ -34,8 +30,8 @@ export function PricingBody({ cfg }: { cfg: PBCfg }) {
     <section className="pb-table"><h2>{cfg.tableTitle}</h2>
       <div className="pb-tbl" style={{ ["--c" as string]: nc } as React.CSSProperties}>
         <div className="pb-tr pb-tr--h"><span />{cfg.cols.map(c => <b key={c}>{c}</b>)}</div>
-        {[...cfg.groups.map(g => [...g, 0] as [string, string[], number]), ...fillGroups(cfg.fill ?? 0).map((g, i) => [...g, i + 1] as [string, string[], number])].map(([g, rows, fi]) => <div key={g} className={"pb-grp" + (fi > (cfg.fillMobile ?? 3) ? " pb-grp--fm" : "")}><div className="pb-tr pb-tr--g"><strong>{g}</strong></div>
-          {rows.map((r, i) => <div key={r} className="pb-tr"><span>{r}</span>{cfg.cols.map((c, j) => <div key={c}><Mark on={j >= (i + g.length) % nc || j === nc - 1} /></div>)}</div>)}</div>)}
+        {cfg.groups.map(([g, rows]) => <div key={g} className="pb-grp"><div className="pb-tr pb-tr--g"><strong>{g}</strong></div>
+          {rows.map(r => { const off = r.startsWith("-"); return <div key={r} className="pb-tr"><span className={off ? "off" : ""}>{off ? r.slice(1) : r}</span>{cfg.cols.map(c => <div key={c}><Mark on={!off} /></div>)}</div>; })}</div>)}
       </div></section>
     <section className="pb-faq"><h2>{cfg.faqTitle}</h2>{cfg.faqs.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</section>
     {cfg.cta && <section className="pb-cta"><div><h2>{cfg.cta.title}</h2><Link className="pb-btn pb-btn--p" href="/login">{cfg.cta.btn}</Link></div></section>}
