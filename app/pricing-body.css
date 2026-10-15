@@ -20,3 +20,6 @@
 @media (max-width:900px){.pb{--h1:40px;--hero-pt:64px;--hero-pb:40px}.pb-plans{grid-template-columns:1fr!important;padding:0 20px 40px!important}.pb-extra{grid-template-columns:1fr;margin:0 20px 40px;padding:32px;min-height:0}.pb-extra h2{font-size:34px;line-height:40px}.pb-extra__art{min-height:180px}.pb-tr{grid-template-columns:1.3fr repeat(var(--c),.7fr);font-size:13px;padding:0 4px}.pb-tr--h b{font-size:12px}.pb-table{padding:32px 16px 48px}.pb-table h2,.pb-faq h2{font-size:32px;line-height:38px}.pb-faq{padding:56px 20px 64px}.pb-cta{padding:32px 16px}.pb-cta>div{flex-direction:column;align-items:flex-start;padding:32px;min-height:0}.pb-cta h2{font-size:32px;line-height:38px}}
 
 .pb-tr span.off{opacity:.55}
+/* mobile: inline config vars beat the media query, so cap sizes on the properties themselves */
+@media (max-width:900px){.pb-hero{padding-top:min(var(--hero-pt),72px);padding-bottom:min(var(--hero-pb),40px)}.pb-hero h1{font-size:min(var(--h1),40px);line-height:1.1}.pb-plan h2{font-size:min(var(--plan-h2,36px),32px);line-height:38px}}
+@media (max-width:900px){.pb-hero h1{font-size:35px;line-height:36px}.pb-hero{padding-top:50px}.pb-plan h2{font-size:35px;line-height:40px}}
