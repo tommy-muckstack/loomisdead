@@ -34,3 +34,14 @@
 .au-prov.primary{background:var(--au-cta);color:var(--au-ctafg);border-color:transparent}.au-prov.primary:hover:not(:disabled){background:var(--au-cta);filter:brightness(.92)}
 .au-fgt{float:right;font-weight:400;color:var(--au-accent);font-size:12px}.au-rem{display:flex;align-items:center;gap:8px;font-weight:400!important;margin:-4px 0 14px}.au-rem input{height:auto;margin:0}
 .au-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.au-alt{height:42px;border:1px solid #cfcfd6;border-radius:var(--au-r);background:#fff;font-weight:600;font-size:14px;font-family:inherit;cursor:pointer;color:var(--au-ink)}
+/* Loom parity: geometry from loom.com/login at 1440 */
+.au-top{height:64px;padding:0 16px}.au-top a.au-topcta{padding:0;height:32px;width:134px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;border-radius:6px}
+.au--center .au-main{padding-top:36px}.au-form{width:min(100%,400px)}
+.au-form h1{font-size:32px;line-height:36px;letter-spacing:.5px;font-weight:600;margin-bottom:40px;text-align:center}
+.au-prov{height:40px;margin-bottom:12px;border-color:rgba(11,18,14,.14);font-size:14px}
+.au-or{margin:20px 0 22px;font-size:12px}
+.au-form label{font-size:14px;font-weight:400;margin-bottom:4px}
+.au-form input{height:56px;border-radius:12px;font-size:18px;padding:0 16px;border-color:rgba(11,18,14,.14);margin-bottom:16px}
+.au-cta{height:40px;border-radius:6px;font-size:14px;font-weight:500}
+.au-legal{font-size:12px;line-height:18px;margin-top:16px;text-align:left}
+.au-switch{font-size:12px}.au-links{font-size:12px;text-align:center}
