@@ -14,4 +14,6 @@ export const pricingCfg: PBCfg = {
   faqTitle: "FAQs",
   faqs: [["Can I test out a paid plan?", "Every feature is free here, so there is nothing to unlock. Self-host it or use the hosted demo."], ["What’s the difference between Business + AI and Business?", "Nothing is paywalled in this open-source project. The names mirror the original plan structure."], ["Why should I consider going with Business + AI?", "It is the plan with all the AI-assisted features turned on."], ["When do enterprise plans make sense?", "When you need SSO, SCIM and an uptime commitment for a large organization."], ["What are my payment options?", "There is nothing to pay. Donations to the project are welcome."], ["How do I add a team to my workspace?", "Invite teammates from your workspace settings."], ["Do I get a refund?", "There is nothing to refund."], ["How long does a video last?", "Videos last as long as you host them."], ["Is there a discounted education plan?", "Everything is free for schools too."], ["Can I download my videos?", "Yes. Download or export any recording at any time."]],
   cta: { title: "Ready to improve how your team communicates?", btn: "Get started" },
+  fill: 96,
+  fillMobile: 0,
 };
