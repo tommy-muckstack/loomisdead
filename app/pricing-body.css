@@ -23,3 +23,6 @@
 /* mobile: inline config vars beat the media query, so cap sizes on the properties themselves */
 @media (max-width:900px){.pb-hero{padding-top:min(var(--hero-pt),72px);padding-bottom:min(var(--hero-pb),40px)}.pb-hero h1{font-size:min(var(--h1),40px);line-height:1.1}.pb-plan h2{font-size:min(var(--plan-h2,36px),32px);line-height:38px}}
 @media (max-width:900px){.pb-hero h1{font-size:35px;line-height:36px}.pb-hero{padding-top:50px}.pb-plan h2{font-size:35px;line-height:40px}}
+/* group headings are <summary> elements: no native marker, chevron on phones */
+.pb-grp>summary{list-style:none;cursor:default}.pb-grp>summary::-webkit-details-marker{display:none}
+@media (max-width:900px){.pb-grp>summary{cursor:pointer;display:flex!important;justify-content:space-between;align-items:center}.pb-grp>summary::after{content:"+";font-size:20px;line-height:1;font-weight:400}.pb-grp[open]>summary::after{content:"–"}}

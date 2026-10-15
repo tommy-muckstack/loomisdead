@@ -1,5 +1,6 @@
 import Link from "next/link";
 import "@/app/pricing-body.css";
+import { PbCollapse } from "@/components/PbCollapse";
 
 export type Plan = { name: string; price: string; per?: string; desc: string; cta: string; feats: string[]; hot?: boolean; tag?: string; lead?: string };
 export type PBCfg = {
@@ -30,8 +31,9 @@ export function PricingBody({ cfg }: { cfg: PBCfg }) {
     <section className="pb-table"><h2>{cfg.tableTitle}</h2>
       <div className="pb-tbl" style={{ ["--c" as string]: nc } as React.CSSProperties}>
         <div className="pb-tr pb-tr--h"><span />{cfg.cols.map(c => <b key={c}>{c}</b>)}</div>
-        {cfg.groups.map(([g, rows]) => <div key={g} className="pb-grp"><div className="pb-tr pb-tr--g"><strong>{g}</strong></div>
-          {rows.map(r => { const off = r.startsWith("-"); return <div key={r} className="pb-tr"><span className={off ? "off" : ""}>{off ? r.slice(1) : r}</span>{cfg.cols.map(c => <div key={c}><Mark on={!off} /></div>)}</div>; })}</div>)}
+        {cfg.groups.map(([g, rows]) => <details key={g} className="pb-grp" open><summary className="pb-tr pb-tr--g"><strong>{g}</strong></summary>
+          {rows.map(r => { const off = r.startsWith("-"); return <div key={r} className="pb-tr"><span className={off ? "off" : ""}>{off ? r.slice(1) : r}</span>{cfg.cols.map(c => <div key={c}><Mark on={!off} /></div>)}</div>; })}</details>)}
+        <PbCollapse />
       </div></section>
     <section className="pb-faq"><h2>{cfg.faqTitle}</h2>{cfg.faqs.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</section>
     {cfg.cta && <section className="pb-cta"><div><h2>{cfg.cta.title}</h2><Link className="pb-btn pb-btn--p" href="/login">{cfg.cta.btn}</Link></div></section>}
