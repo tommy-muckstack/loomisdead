@@ -92,3 +92,28 @@ export async function delBlob(col: string, id: string): Promise<void> {
   const c = (await db()).collection(colName("blob_" + col)); const first = await c.doc(`${safe(id)}~b0`).get(); const n = first.exists ? (first.data() as { n: number }).n : 0;
   for (let i = 0; i < n; i++) await c.doc(`${safe(id)}~b${i}`).delete();
 }
+
+/** After a guest signs in: move every per-user doc (docs keyed by the user id) from the guest id to the account, once. */
+export async function adoptGuestDocs(fromId: string, toId: string): Promise<number> {
+  if (!fromId || !toId || fromId === toId) return 0;
+  let moved = 0;
+  if (useFirestore()) {
+    const d = await db(); const prefix = `${appName()}__`;
+    for (const col of await d.listCollections()) {
+      if (!col.id.startsWith(prefix)) continue;
+      const src = await col.doc(safe(fromId)).get(); if (!src.exists) continue;
+      const dstRef = col.doc(safe(toId)); if ((await dstRef.get()).exists) continue;
+      await dstRef.set(src.data()!); await src.ref.delete(); moved++;
+    }
+  } else {
+    const root = dataDir();
+    let cols: string[] = []; try { cols = await fs.readdir(root); } catch { return 0; }
+    for (const col of cols) {
+      const from = path.join(root, col, `${safe(fromId)}.json`), to = path.join(root, col, `${safe(toId)}.json`);
+      try { await fs.access(from); } catch { continue; }
+      try { await fs.access(to); continue; } catch { /* no account doc yet */ }
+      await fs.rename(from, to); moved++;
+    }
+  }
+  return moved;
+}

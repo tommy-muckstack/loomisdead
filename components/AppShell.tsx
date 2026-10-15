@@ -24,7 +24,7 @@ const P: Record<string, string> = {
 };
 export const Ic = ({ n, s = 20 }: { n: string; s?: number }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d={P[n] || P.grid} /></svg>;
 
-export function AppShell({ user, cfg, children }: { user: { name: string; email: string; demo: boolean }; cfg: ShellCfg; children: React.ReactNode }) {
+export function AppShell({ user, cfg, children }: { user: { name: string; email: string; demo: boolean; guest?: boolean }; cfg: ShellCfg; children: React.ReactNode }) {
   const path = usePathname() || "";
   const rel = path.startsWith(BP) ? path.slice(BP.length) || "/" : path;
   const on = (h: string) => h === "/app" ? rel === "/app" : rel.startsWith(h);
@@ -44,7 +44,7 @@ export function AppShell({ user, cfg, children }: { user: { name: string; email:
         {cfg.search && <label className="as-search"><Ic n="search" s={16} /><input placeholder={cfg.search} aria-label="Search" /></label>}
         <div className="as-right">
           {cfg.right?.map(r => <Link key={r.label} href={r.href} className={"as-btn" + (r.solid ? " solid" : "")}>{r.label}</Link>)}
-          <span className="as-me" title={user.demo ? "Demo account" : user.email}>{initial}</span>
+          <span className="as-me" title={user.guest ? "Guest · sign in to keep your work" : user.demo ? "Demo account" : user.email}>{initial}</span>
           <form method="post" action={`${BP}/api/session/logout`}><button className="as-out">Sign out</button></form>
         </div>
       </header>
