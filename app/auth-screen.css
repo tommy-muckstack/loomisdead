@@ -1,0 +1,36 @@
+/* generic auth screen — see AuthScreen.tsx */
+.au{min-height:100vh;background:var(--au-bg);color:var(--au-ink);display:flex;flex-direction:column}
+.au-top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px}.au-top.dark{color:#fff}.au-top>div{display:flex;gap:14px;align-items:center}.au-top a{color:inherit}
+.au-toplogo{text-decoration:none;color:inherit}
+.au-topcta{background:var(--au-cta);color:var(--au-ctafg)!important;padding:7px 14px;border-radius:var(--au-r);text-decoration:none;font-weight:600}
+.au-body{flex:1;display:grid;grid-template-columns:1fr}
+.au--splitL .au-body,.au--splitR .au-body{grid-template-columns:1fr 1fr}
+.au-main{display:flex;justify-content:center;align-items:center;padding:40px 24px}
+.au--center .au-main{align-items:flex-start;padding-top:56px}
+.au-form{width:min(100%,360px);display:flex;flex-direction:column}
+.au-card{background:#fff;border-radius:calc(var(--au-r) * 2);padding:32px 32px 26px;box-shadow:0 8px 34px rgba(20,20,40,.1);width:min(100%,420px)}
+.au-logoc{display:flex;justify-content:center;margin-bottom:22px}
+.au-form h1{font-size:26px;line-height:1.2;letter-spacing:-.02em;margin:0 0 8px;font-weight:700}
+.au-sub{margin:0 0 20px;font-size:13.5px;color:var(--au-muted);line-height:1.45}
+.au--center .au-form h1,.au--center .au-sub{text-align:center}
+.au-prov{height:42px;margin-bottom:10px;border:1px solid #d7d7dc;border-radius:var(--au-r);background:#fff;color:var(--au-ink);font-weight:500;font-size:14px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:inherit}
+.au-prov:hover:not(:disabled){background:#f6f6f8}.au-prov:disabled{opacity:.6;cursor:not-allowed}
+.au-badge{width:18px;height:18px;border-radius:5px;color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.au-or{display:flex;align-items:center;gap:12px;margin:8px 0 14px;font-size:11px;color:var(--au-muted)}.au-or:before,.au-or:after{content:"";flex:1;border-top:1px solid #e3e3e8}
+.au-form form{display:grid}.au-form label{font-size:12.5px;font-weight:600;margin-bottom:6px}
+.au-form input{height:42px;border:1px solid #cfcfd6;border-radius:var(--au-r);padding:0 12px;font-size:14px;font-family:inherit;margin-bottom:14px;background:#fff;color:var(--au-ink)}
+.au-form input:focus{outline:2px solid var(--au-accent);outline-offset:-1px;border-color:transparent}
+.au-cta{height:42px;border:0;border-radius:var(--au-r);background:var(--au-cta);color:var(--au-ctafg);font-weight:600;font-size:14px;font-family:inherit;cursor:pointer}.au-cta:hover{filter:brightness(.92)}.au-cta:disabled{opacity:.6}
+.au-links{margin-top:14px;text-align:right;font-size:12.5px}.au-links a,.au-switch a{color:var(--au-accent)}
+.au-switch{margin:20px 0 0;font-size:13px;color:var(--au-muted);text-align:center}
+.au-legal{margin:14px 0 0;font-size:11px;line-height:1.5;color:var(--au-muted);text-align:center}
+.au-note{font-size:12.5px;color:var(--au-muted)}.au-err{color:#c0362c;font-size:13px}
+.au-demo{margin-top:12px;height:40px;border:1px dashed #9a9aa5;background:transparent;border-radius:var(--au-r);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;color:var(--au-ink)}
+.au-art{display:flex;align-items:center;justify-content:center;padding:40px;text-align:center;overflow:hidden;position:relative}
+.au-art h2{font-size:30px;line-height:1.15;letter-spacing:-.02em;margin:0 0 12px}.au-art p{margin:0;opacity:.75;font-size:14px}
+.au-art--dark{background:#1c1f26;color:#fff}.au-art--color{background:#2a5cff;color:#fff}
+.au-blocks{display:flex;gap:12px;margin-top:32px;align-items:flex-end;justify-content:center}.au-blocks i{width:90px;border-radius:14px;display:block}
+@media (max-width:860px){.au--splitL .au-body,.au--splitR .au-body{grid-template-columns:1fr}.au-art{display:none}}
+.au-prov.primary{background:var(--au-cta);color:var(--au-ctafg);border-color:transparent}.au-prov.primary:hover:not(:disabled){background:var(--au-cta);filter:brightness(.92)}
+.au-fgt{float:right;font-weight:400;color:var(--au-accent);font-size:12px}.au-rem{display:flex;align-items:center;gap:8px;font-weight:400!important;margin:-4px 0 14px}.au-rem input{height:auto;margin:0}
+.au-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.au-alt{height:42px;border:1px solid #cfcfd6;border-radius:var(--au-r);background:#fff;font-weight:600;font-size:14px;font-family:inherit;cursor:pointer;color:var(--au-ink)}
