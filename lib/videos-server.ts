@@ -1,10 +1,9 @@
-// Server-side videos: metadata via lib/store.ts, bytes on disk under <dataDir>/videos/<id>/{video,thumb.jpg}.
-// Local/dev only: Vercel's disk is ephemeral and request bodies cap at 4.5 MB, so production needs object storage with signed uploads (README "Gaps").
+// Server-side videos: metadata and bytes via lib/store.ts (Firestore in production, files in dev).
+// Vercel request bodies cap at 4.5 MB, so production sets NEXT_PUBLIC_MAX_UPLOAD_MB=4. Larger videos need object storage with signed uploads (README "Gaps").
 import crypto from "node:crypto"; import fs from "node:fs/promises"; import path from "node:path";
-import { getDoc, putDoc, delDoc, listDocs, dataDir } from "@/lib/store";
+import { getDoc, putDoc, delDoc, listDocs, putBlob, getBlob, delBlob } from "@/lib/store";
 import { genId, cleanTitle, cleanDuration, cleanComment, isReaction, validateUpload, sniffVideo, LIMITS, type VideoMeta, type Comment, type Reaction } from "@/lib/video";
 const COL = "videos";
-const dirOf = (id: string) => path.join(dataDir(), "videos", id.replace(/[^a-z0-9]/g, ""));
 const chain = new Map<string, Promise<unknown>>();
 function locked<T>(k: string, fn: () => Promise<T>): Promise<T> { const prev = chain.get(k) ?? Promise.resolve(); const next = prev.then(fn, fn); chain.set(k, next.catch(() => {})); return next; }
 
@@ -12,12 +11,12 @@ export async function createVideo(owner: { id: string; name: string } | null, by
   const type = sniffVideo(bytes); if (!type) return { error: "That file isn't a WebM or MP4 video." };
   const duration = cleanDuration(o.duration); const bad = validateUpload(bytes.length, duration); if (bad) return { error: bad };
   let id = genId(); while (await getDoc(COL, id)) id = genId();
-  const dir = dirOf(id); await fs.mkdir(dir, { recursive: true }); await fs.writeFile(path.join(dir, "video"), bytes); if (o.thumb) await fs.writeFile(path.join(dir, "thumb.jpg"), o.thumb);
+  await putBlob("video", id, bytes); if (o.thumb) await putBlob("thumb", id, o.thumb);
   const v: VideoMeta = { id, ownerId: owner?.id ?? null, ownerName: owner?.name ?? "Guest", title: cleanTitle(o.title ?? ""), duration, size: bytes.length, type, hasThumb: !!o.thumb, createdAt: o.createdAt ?? new Date().toISOString(), views: 0, comments: [], reactions: [], deleteKey: crypto.randomBytes(12).toString("base64url") };
   await putDoc(COL, id, v); return { video: v };
 }
 export const getVideo = (id: string) => getDoc<VideoMeta>(COL, id);
-export async function removeVideo(id: string) { await delDoc(COL, id); await fs.rm(dirOf(id), { recursive: true, force: true }); }
+export async function removeVideo(id: string) { await delDoc(COL, id); await delBlob("video", id); await delBlob("thumb", id); }
 export async function listVideos(ownerId: string, demo = false): Promise<VideoMeta[]> {
   if (demo && !(await getDoc("seeded", "videos-" + ownerId))) { await putDoc("seeded", "videos-" + ownerId, { at: Date.now() }); await seedDemo(ownerId); }
   return (await listDocs<VideoMeta>(COL)).filter(v => v.ownerId === ownerId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -34,8 +33,8 @@ export const addReaction = (id: string, emoji: unknown, at: unknown) => locked(i
   const v = await getVideo(id); if (!v || !isReaction(emoji)) return null; if (v.reactions.length >= 2000) return v;
   const a = Number(at); v.reactions.push({ emoji: emoji as Reaction, at: Number.isFinite(a) ? Math.min(Math.max(0, Math.round(a * 10) / 10), v.duration) : 0 }); await putDoc(COL, id, v); return v;
 });
-export async function fileStat(id: string, name: "video" | "thumb.jpg") { try { return (await fs.stat(path.join(dirOf(id), name))).size; } catch { return null; } }
-export async function openFile(id: string, name: "video" | "thumb.jpg") { try { return await fs.open(path.join(dirOf(id), name), "r"); } catch { return null; } }
+/** Whole media file (videos are capped at a few MB in production, see LIMITS.bytes). */
+export const readMedia = (id: string, name: "video" | "thumb.jpg") => getBlob(name === "video" ? "video" : "thumb", id);
 
 // crude per-process rate limit
 const hits = new Map<string, number[]>();

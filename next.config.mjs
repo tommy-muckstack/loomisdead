@@ -4,4 +4,5 @@ export default {
   env: { NEXT_PUBLIC_BASE_PATH: basePath },
   // /f/<id> style public routes live under the same basePath.
   poweredByHeader: false,
+  outputFileTracingIncludes: { "/**": ["./seed/**"] },
 };

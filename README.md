@@ -31,3 +31,7 @@ Env (production): `NEXT_PUBLIC_FIREBASE_*`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `AU
 - Sign-in has not been tested against the live Firebase project (keys pending).
 
 Not affiliated with Loom or Atlassian. Apache-2.0.
+
+## Production limits (yourappisdead.com)
+
+Server data lives in Firestore (project `yourappisdead`), including file bytes (stored as chunked documents). Vercel request bodies are capped at 4.5 MB, so the hosted build sets `NEXT_PUBLIC_MAX_UPLOAD_MB=4` and rejects larger uploads. Self-hosting (or adding Firebase Storage / Vercel Blob with direct-to-bucket uploads) lifts this; locally the default limit and on-disk storage apply.

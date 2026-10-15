@@ -1,5 +1,5 @@
 // Pure video model: ids, validation, formatting, comments, Range parsing. No I/O so it is unit-tested.
-export const LIMITS = { bytes: 150 * 1024 * 1024, seconds: 60 * 60, title: 120, comment: 500, thumb: 400_000, comments: 500 };
+export const LIMITS = { bytes: (Number(process.env.NEXT_PUBLIC_MAX_UPLOAD_MB) || 150) * 1024 * 1024, seconds: 60 * 60, title: 120, comment: 500, thumb: 400_000, comments: 500 };
 export const REACTIONS = ["👍", "❤️", "😂", "🎉", "👏", "🔥"] as const;
 export type Reaction = (typeof REACTIONS)[number];
 export type Comment = { id: string; name: string; text: string; at: number; createdAt: string; userId: string | null };

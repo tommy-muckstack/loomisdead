@@ -7,7 +7,7 @@ beforeAll(async () => { process.env["ISDEAD_DATA_DIR"] = fs.mkdtempSync(path.joi
 describe("videos", () => {
   it("stores a video with its thumbnail and lists it for the owner only", async () => {
     const r = await S.createVideo(owner, WEBM, { title: "  Demo  ", duration: 12.34, thumb: Buffer.from([0xff, 0xd8, 0xff]) }); const v = r.video!;
-    expect(v.title).toBe("Demo"); expect(v.duration).toBe(12.3); expect(v.type).toBe("video/webm"); expect(v.hasThumb).toBe(true); expect(await S.fileStat(v.id, "video")).toBe(WEBM.length); expect(await S.fileStat(v.id, "thumb.jpg")).toBe(3);
+    expect(v.title).toBe("Demo"); expect(v.duration).toBe(12.3); expect(v.type).toBe("video/webm"); expect(v.hasThumb).toBe(true); expect((await S.readMedia(v.id, "video"))?.length).toBe(WEBM.length); expect((await S.readMedia(v.id, "thumb.jpg"))?.length).toBe(3);
     expect((await S.listVideos("u1")).map(x => x.id)).toContain(v.id); expect(await S.listVideos("u2")).toEqual([]);
   });
   it("rejects non-video bytes and empty or over-long uploads", async () => {
@@ -16,7 +16,7 @@ describe("videos", () => {
   it("renames, counts views atomically and removes files on delete", async () => {
     const v = (await S.createVideo(owner, WEBM, { title: "A", duration: 5 })).video!; expect((await S.updateTitle(v.id, "  New  "))!.title).toBe("New"); expect((await S.updateTitle(v.id, "   "))!.title).toBe("New");
     await Promise.all(Array.from({ length: 25 }, () => S.recordView(v.id))); expect((await S.getVideo(v.id))!.views).toBe(25);
-    const dir = path.join(process.env["ISDEAD_DATA_DIR"]!, "videos", v.id); expect(fs.existsSync(dir)).toBe(true); await S.removeVideo(v.id); expect(await S.getVideo(v.id)).toBeNull(); expect(fs.existsSync(dir)).toBe(false);
+    expect(await S.readMedia(v.id, "video")).not.toBeNull(); await S.removeVideo(v.id); expect(await S.getVideo(v.id)).toBeNull(); expect(await S.readMedia(v.id, "video")).toBeNull();
   });
   it("adds, validates and deletes comments; reactions stay valid", async () => {
     const v = (await S.createVideo(owner, WEBM, { duration: 10 })).video!;

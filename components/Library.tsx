@@ -13,7 +13,7 @@ export function Library({ initial }: { initial: PublicVideo[] }) {
   const [videos, setVideos] = useState(initial); const [q, setQ] = useState(""); const [err, setErr] = useState(""); const [up, setUp] = useState<number | null>(null); const [copied, setCopied] = useState(""); const pick = useRef<HTMLInputElement>(null);
   const shown = videos.filter(v => v.title.toLowerCase().includes(q.trim().toLowerCase()));
   const upload = async (f: File | undefined) => {
-    if (!f) return; setErr(""); if (f.size > LIMITS.bytes) return setErr("That file is bigger than 150 MB."); const dur = await probe(f); setUp(0);
+    if (!f) return; setErr(""); if (f.size > LIMITS.bytes) return setErr(`That file is bigger than ${Math.round(LIMITS.bytes / 1048576)} MB.`); const dur = await probe(f); setUp(0);
     const fd = new FormData(); fd.set("video", f, f.name); fd.set("title", f.name.replace(/\.[a-z0-9]+$/i, "") || defaultTitle()); fd.set("duration", String(dur || 1));
     const x = new XMLHttpRequest(); x.open("POST", `${BP}/api/videos`); x.upload.onprogress = e => { if (e.lengthComputable) setUp(Math.round((e.loaded / e.total) * 100)); };
     x.onload = () => { setUp(null); let j: { video?: PublicVideo; error?: string } = {}; try { j = JSON.parse(x.responseText); } catch { /* ignore */ } if (x.status === 201 && j.video) setVideos(vs => [j.video!, ...vs]); else setErr(j.error ?? "Couldn't upload that video."); };

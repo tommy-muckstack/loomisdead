@@ -8,7 +8,7 @@ type Mode = "screen-cam" | "screen" | "cam";
 type Phase = "setup" | "countdown" | "recording" | "paused" | "review" | "saving";
 const MIMES = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
 const pickMime = () => (typeof MediaRecorder === "undefined" ? "" : MIMES.find(m => MediaRecorder.isTypeSupported(m)) ?? "");
-const MAX_BYTES = LIMITS.bytes - 4 * 1024 * 1024;
+const MAX_BYTES = LIMITS.bytes - Math.min(4 * 1024 * 1024, LIMITS.bytes / 10);
 
 /** In-browser recorder: screen, camera or both (camera bubble composited onto a canvas), with microphone, countdown, pause and review. */
 export function Recorder() {
