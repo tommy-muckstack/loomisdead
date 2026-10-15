@@ -1,0 +1,85 @@
+{
+  "name": "loom",
+  "source": "loom.com homepage look (indigo #625DF5, deep navy text, lavender-to-white gradient hero, pill CTAs, 12px cards), original art, measured 2026-10-14",
+  "font": {
+    "sans": "Urbanist",
+    "display": "Urbanist",
+    "files": {
+      "Urbanist": "loom/Urbanist-Variable.woff2"
+    },
+    "mono": "ui-monospace, SFMono-Regular, Menlo, monospace",
+    "note": "Loom's brand sans is proprietary and not shipped. Urbanist (OFL) is our lookalike: clean low-contrast geometric sans with round bowls."
+  },
+  "color": {
+    "bg": "#FFFFFF",
+    "surface": "#FFFFFF",
+    "surfaceAlt": "#F6F5FF",
+    "text": "#1B1B2F",
+    "textMuted": "#4B4B66",
+    "textSubtle": "#8888A3",
+    "border": "#E3E2F1",
+    "borderStrong": "#1B1B2F",
+    "danger": "#C62828",
+    "success": "#1B7F4B",
+    "warning": "#B7791F",
+    "onPrimary": "#FFFFFF",
+    "onAccent": "#FFFFFF",
+    "primary": "#625DF5",
+    "primaryHover": "#4F4AE0",
+    "accent": "#625DF5",
+    "accentHover": "#4F4AE0",
+    "accentSoft": "#ECEBFF",
+    "focus": "#625DF5",
+    "heroFrom": "#ECEBFF",
+    "heroMid": "#F6F1FF",
+    "heroTo": "#FFFFFF"
+  },
+  "radius": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "10px",
+    "lg": "14px",
+    "xl": "24px",
+    "pill": "9999px"
+  },
+  "space": {
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "8": "32px",
+    "10": "40px",
+    "12": "48px",
+    "16": "64px"
+  },
+  "shadow": {
+    "sm": "0 1px 2px rgba(27,27,47,.08)",
+    "md": "0 4px 16px rgba(27,27,47,.10)",
+    "lg": "0 16px 48px rgba(27,27,47,.16)"
+  },
+  "type": {
+    "xs": "12px",
+    "sm": "14px",
+    "md": "16px",
+    "lg": "18px",
+    "xl": "24px",
+    "2xl": "32px",
+    "3xl": "44px",
+    "4xl": "60px",
+    "weightBody": 400,
+    "weightStrong": 600,
+    "weightHeading": 700,
+    "tracking": "-0.02em",
+    "lineHeight": 1.5
+  },
+  "control": {
+    "height": "48px",
+    "heightSm": "36px",
+    "borderWidth": "1px",
+    "buttonRadius": "9999px",
+    "inputRadius": "10px",
+    "cardRadius": "16px"
+  }
+}
