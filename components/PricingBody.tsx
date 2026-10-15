@@ -48,9 +48,9 @@ export function PricingBody({ cfg }: { cfg: PBCfg }) {
     {cfg.extra && <section className="pb-extra"><div><h2>{cfg.extra.title}</h2><p>{cfg.extra.text}</p>{cfg.extra.bullets && <ul>{cfg.extra.bullets.map(b => <li key={b}>{cfg.matrix && <Mark on />}<span>{Nw(b)}</span></li>)}</ul>}<Link className="pb-btn pb-btn--p" href="/login">{cfg.extra.cta}</Link></div><div className="pb-extra__art" aria-hidden><i /><i /><i /></div></section>}
     {cfg.matrix && <p className="pb-stu"><svg width="26" height="18" viewBox="0 0 26 18" aria-hidden><circle cx="6" cy="10" r="5" fill="none" stroke="currentColor" strokeWidth="2" /><circle cx="20" cy="10" r="5" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M11 9h4M1 8l2-6M25 8l-2-6" fill="none" stroke="currentColor" strokeWidth="2" /></svg><span>Are you a student or teacher? <Link href="/login">Try our discounted plan</Link>.</span></p>}
     {cfg.matrix && <section className="pb-mx"><table><thead><tr><th />{cfg.cols.map((c, i) => <th key={c} className={i === 2 ? "hot" : ""}>{c}<Link href="/login">{plans[i]?.cta}</Link></th>)}</tr></thead><tbody>
-      {(matrix as { g?: string; l?: string; n?: number; v?: string[] }[]).map((r, i) => r.g !== undefined
+      {(matrix as { g?: string; l?: string; n?: number; h?: number; v?: string[] }[]).map((r, i) => r.g !== undefined
         ? <tr key={i} className="g"><th colSpan={5}>{r.g.startsWith("Try for free! ") ? <><Link href="/login">Try for free!</Link><h3>{r.g.slice(14)}</h3></> : <h3>{r.g}</h3>}</th></tr>
-        : <tr key={i}><th>{r.l}{r.n ? <em>NEW</em> : null}</th>{r.v!.map((v, j) => <td key={j} className={v ? "" : "e"}>{v === "Included" ? <Mark on /> : v}</td>)}</tr>)}
+        : <tr key={i} style={r.h ? { height: r.h } : undefined}><th>{r.l}{r.n ? <em>NEW</em> : null}</th>{r.v!.map((v, j) => <td key={j} className={v ? "" : "e"}>{v === "Included" ? <Mark on /> : v}</td>)}</tr>)}
     </tbody></table></section>}
     <section className={"pb-table" + (cfg.matrix ? " pb-table--m" : "")}><h2>{cfg.tableTitle}</h2>
       <div className="pb-tbl" style={{ ["--c" as string]: nc } as React.CSSProperties}>

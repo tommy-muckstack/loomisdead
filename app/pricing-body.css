@@ -80,8 +80,8 @@
   .pb--lm .pb-faq summary::after{content:"↓";font-size:24px}.pb--lm .pb-faq details[open] summary::after{content:"↑"}
   .pb--lm .pb-faq details[open] summary{min-height:100px}
   .pb--lm .pb-faq details p{font-size:18.6px;line-height:30.7px;padding:0 0 36px}
-  .pb--lm .pb-logos{display:block;text-align:center;padding:111px 0 0;height:670px;background:#fff}
-  .pb--lm .pb-logos h2{font-size:56px;line-height:64px;font-weight:700;max-width:760px;margin:0 auto 40px}
+  .pb--lm .pb-logos{display:block;text-align:center;padding:198px 0 0;height:757px;background:#fff}
+  .pb--lm .pb-logos h2{font-size:48px;line-height:50.5px;font-weight:700;max-width:810px;margin:0 auto 48px}
   .pb--lm .pb-logos small{display:block;margin-top:18px;font-size:12.6px}
   .pb--lm .pb-logos__row{display:flex;justify-content:space-around;margin-top:90px;font-size:30px;font-weight:700;color:#5c5f66;letter-spacing:1px;white-space:nowrap;overflow:hidden}
   .pb--lm .pb-cta{padding:0 80px 111px}
