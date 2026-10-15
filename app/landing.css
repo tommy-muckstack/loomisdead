@@ -170,3 +170,10 @@
 .lp.is-pr>aside,.lp.is-pr .lp-banner{display:none!important}
 .lp.is-pr .lp-hd{height:90px}.lp.is-pr .lp-nav{top:21px}
 @media (max-width:760px){.lp.is-pr .lp-hd{height:80px}.lp.is-pr .lp-nav{top:18px}}
+/* mobile header/hero parity: nav first, announcement bar under it */
+@media (max-width:760px){
+  .lp-nav{top:12px}.lp-banner{top:66px;height:66px;font-size:11px;line-height:16px;padding:12px 40px 0 16px}.lp-x{top:8px}
+  .lp-lede{margin-top:16px}
+  .lp-row{align-items:flex-start}.lp-row .lp-btn{width:190px;height:54px;font-size:18px}
+}
+@media (max-width:760px){.lp-nav::after{background:linear-gradient(#292a2e,#292a2e) 50% 14px/16px 2px no-repeat,linear-gradient(#292a2e,#292a2e) 50% 19px/16px 2px no-repeat,linear-gradient(#292a2e,#292a2e) 50% 24px/16px 2px no-repeat,var(--lb);width:48px;height:48px;background-position:50% 17px,50% 23px,50% 29px,0 0}}
