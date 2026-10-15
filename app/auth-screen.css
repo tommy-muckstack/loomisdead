@@ -45,3 +45,33 @@
 .au-cta{height:40px;border-radius:6px;font-size:14px;font-weight:500}
 .au-legal{font-size:12px;line-height:18px;margin-top:16px;text-align:left}
 .au-switch{font-size:12px}.au-links{font-size:12px;text-align:center}
+/* Loom login parity (round 3): Atlassian-style type, brand provider icons, idle Continue, centred legal */
+@font-face{font-family:"IsDead Inter";src:url("./fonts/Inter-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+.au{font-family:"IsDead Inter",system-ui,sans-serif!important;--au-ink:#292a2e}
+.au *{font-family:inherit}
+.au-form h1{font-weight:600;letter-spacing:-.01em;color:#292a2e}
+.au-prov{font-weight:500;color:#292a2e;gap:8px;border-radius:4px}
+.au-prov svg{flex:none}
+.au-or{color:#505258;font-weight:600;letter-spacing:.04em}.au-or:before,.au-or:after{border-top-color:#dcdfe4}
+.au-form label{color:#292a2e}
+.au-form input{border-color:#8c8f97;color:#292a2e}.au-form input::placeholder{color:#8c8f97}
+.au-cta.is-idle{background:#f0f1f2;color:#8c8f97}
+.au-legal{text-align:center;color:#505258;margin-top:16px}.au-legal+*{margin-top:12px}
+.au-switch{text-align:center;color:#505258;margin-top:14px}.au-switch a,.au-legal a{color:#1868db;text-decoration:underline}
+.au-links{text-align:center}.au-links a{color:#1868db}
+.au-prov:disabled{opacity:1;cursor:default}.au-prov:disabled:hover{background:#fff}
+/* signup: light-blue canvas, white card, Google only, then a quote */
+.au--su{--au-bg:#dbeeff}.au--su .au-main{flex-direction:column;align-items:center}
+.au--su .au-form{background:#fff;border-radius:16px;padding:32px;width:min(100%,432px);box-shadow:0 1px 3px rgba(9,30,66,.12)}
+.au--su .au-form h1{font-size:28px;line-height:32px;margin-bottom:24px;letter-spacing:-.01em}
+.au--su .au-prov:not(.p-google){display:none}.au--su .au-prov.p-google{background:#f0f1f2;border-color:transparent}
+.au--su .au-demo,.au--su .au-links{display:none}
+.au-quote{max-width:330px;text-align:center;font-size:13px;line-height:19px;color:#292a2e;margin:26px auto 0;font-weight:500}
+@media (max-width:520px){.au--su .au-form{padding:24px 20px}.au--su .au-main{padding:24px 16px}}
+.au--su{background:#dbeeff!important}.au--su .au-main{padding-top:92px}
+.au--su .au-form{border-radius:24px;padding:40px 48px 36px;width:min(100%,496px);box-shadow:0 8px 24px rgba(9,30,66,.1)}
+.au--su .au-switch{margin:24px 0 0;font-size:14px;color:#1868db;text-align:center}.au--su .au-switch a{text-decoration:none}
+.au--su .au-quote{margin-top:20px}
+.au--su{background:#e1f1ff!important}.au--su .au-top{background:transparent}.au--su .au-topcta{display:none}.au--su .au-main{padding-top:28px}.au--su .au-form{padding:40px 48px}
+.au--su .au-form h1{font-size:30px;line-height:34px;padding:0 4px}.au--su .au-note{display:none}
+.au-quote{font-weight:600;color:#505258;max-width:400px;font-size:14px;line-height:21px}
