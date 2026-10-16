@@ -15,8 +15,19 @@ export async function createVideo(owner: { id: string; name: string } | null, by
   const v: VideoMeta = { id, ownerId: owner?.id ?? null, ownerName: owner?.name ?? "Guest", title: cleanTitle(o.title ?? ""), duration, size: bytes.length, type, hasThumb: !!o.thumb, createdAt: o.createdAt ?? new Date().toISOString(), views: 0, comments: [], reactions: [], deleteKey: crypto.randomBytes(12).toString("base64url") };
   await putDoc(COL, id, v); return { video: v };
 }
+/** Register a video the Mac app already PUT to Vercel Blob (see lib/direct-upload.ts). `size`/`type` come from a server-side head(), not the client. */
+export async function createVideoFromBlob(owner: { id: string; name: string }, blob: { url: string; size: number; type: string }, o: { title?: string; duration?: unknown; thumb?: Buffer | null }): Promise<{ video?: VideoMeta; error?: string }> {
+  const duration = cleanDuration(o.duration); if (blob.size <= 0) return { error: "That recording is empty." }; if (duration > LIMITS.seconds) return { error: "Videos can be up to 60 minutes long." };
+  let id = genId(); while (await getDoc(COL, id)) id = genId();
+  if (o.thumb) await putBlob("thumb", id, o.thumb);
+  const v: VideoMeta = { id, ownerId: owner.id, ownerName: owner.name, title: cleanTitle(o.title ?? ""), duration, size: blob.size, type: blob.type, hasThumb: !!o.thumb, createdAt: new Date().toISOString(), views: 0, comments: [], reactions: [], deleteKey: crypto.randomBytes(12).toString("base64url"), blobUrl: blob.url };
+  await putDoc(COL, id, v); return { video: v };
+}
 export const getVideo = (id: string) => getDoc<VideoMeta>(COL, id);
-export async function removeVideo(id: string) { await delDoc(COL, id); await delBlob("video", id); await delBlob("thumb", id); }
+export async function removeVideo(id: string) {
+  const v = await getVideo(id); await delDoc(COL, id); await delBlob("video", id); await delBlob("thumb", id);
+  if (v?.blobUrl) { try { const { del } = await import("@vercel/blob"); await del(v.blobUrl); } catch { /* best effort: an orphaned blob is unreachable without its id */ } }
+}
 export async function listVideos(ownerId: string, demo = false): Promise<VideoMeta[]> {
   if (demo && !(await getDoc("seeded", "videos-" + ownerId))) { await putDoc("seeded", "videos-" + ownerId, { at: Date.now() }); await seedDemo(ownerId); }
   return (await listDocs<VideoMeta>(COL)).filter(v => v.ownerId === ownerId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));

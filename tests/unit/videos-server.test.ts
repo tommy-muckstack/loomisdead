@@ -26,6 +26,11 @@ describe("videos", () => {
     expect(await S.deleteComment(v.id, c.id)).toBe(true); expect((await S.getVideo(v.id))!.comments).toHaveLength(1);
     expect(await S.addReaction(v.id, "💩", 1)).toBeNull(); expect((await S.addReaction(v.id, "🔥", 3))!.reactions).toEqual([{ emoji: "🔥", at: 3 }]); expect((await S.addComment("nope", { id: null, name: null }, "x", "", 0)).error).toBe("Video not found.");
   });
+  it("registers a Blob-hosted upload without storing bytes", async () => {
+    const r = await S.createVideoFromBlob(owner, { url: "https://h.public.blob.vercel-storage.com/videos/abcdefghijkmnpqrstuv.mp4", size: 5_000_000, type: "video/mp4" }, { title: "Mac", duration: 42, thumb: null }); const v = r.video!;
+    expect(v.blobUrl).toMatch(/videos\/abcdefghijkmnpqrstuv\.mp4$/); expect(v.size).toBe(5_000_000); expect(v.duration).toBe(42); expect(await S.readMedia(v.id, "video")).toBeNull();
+    expect((await S.createVideoFromBlob(owner, { url: "u", size: 0, type: "video/mp4" }, {})).error).toMatch(/empty/);
+  });
   it("seeds the demo account once and rate-limits", async () => {
     const a = await S.listVideos("demo", true); expect(a.length).toBe(3); expect(a[0]!.hasThumb).toBe(true); expect(a.some(x => x.comments.length > 0)).toBe(true); expect((await S.listVideos("demo", true)).length).toBe(3);
     expect(S.rateLimited("k", 2, 1000, 0)).toBe(false); expect(S.rateLimited("k", 2, 1000, 1)).toBe(false); expect(S.rateLimited("k", 2, 1000, 2)).toBe(true); expect(S.rateLimited("k", 2, 1000, 5000)).toBe(false);

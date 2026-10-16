@@ -177,3 +177,5 @@
   .lp-row{align-items:flex-start}.lp-row .lp-btn{width:190px;height:54px;font-size:18px}
 }
 @media (max-width:760px){.lp-nav::after{background:linear-gradient(#292a2e,#292a2e) 50% 14px/16px 2px no-repeat,linear-gradient(#292a2e,#292a2e) 50% 19px/16px 2px no-repeat,linear-gradient(#292a2e,#292a2e) 50% 24px/16px 2px no-repeat,var(--lb);width:48px;height:48px;background-position:50% 17px,50% 23px,50% 29px,0 0}}
+/* Mobile: no menu exists, so swap the decorative hamburger for the real Download button. */
+@media (max-width:1100px){.lp-nav::after{display:none}.lp-navcta{display:flex!important;margin-left:auto}.lp-navcta .lp-btn{height:40px;padding:0 16px;font-size:14px}}
