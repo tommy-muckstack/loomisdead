@@ -15,7 +15,6 @@
 .au--center .au-form h1,.au--center .au-sub{text-align:center}
 .au-prov{height:42px;margin-bottom:10px;border:1px solid #d7d7dc;border-radius:var(--au-r);background:#fff;color:var(--au-ink);font-weight:500;font-size:14px;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:inherit}
 .au-prov:hover:not(:disabled){background:#f6f6f8}.au-prov:disabled{opacity:.6;cursor:not-allowed}
-.au-badge{width:18px;height:18px;border-radius:5px;color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;line-height:1}
 .au-or{display:flex;align-items:center;gap:12px;margin:8px 0 14px;font-size:11px;color:var(--au-muted)}.au-or:before,.au-or:after{content:"";flex:1;border-top:1px solid #e3e3e8}
 .au-form form{display:grid}.au-form label{font-size:12.5px;font-weight:600;margin-bottom:6px}
 .au-form input{height:42px;border:1px solid #cfcfd6;border-radius:var(--au-r);padding:0 12px;font-size:14px;font-family:inherit;margin-bottom:14px;background:#fff;color:var(--au-ink)}
@@ -59,12 +58,11 @@
 .au-legal{text-align:center;color:#505258;margin-top:16px}.au-legal+*{margin-top:12px}
 .au-switch{text-align:center;color:#505258;margin-top:14px}.au-switch a,.au-legal a{color:#1868db;text-decoration:underline}
 .au-links{text-align:center}.au-links a{color:#1868db}
-.au-prov:disabled{opacity:1;cursor:default}.au-prov:disabled:hover{background:#fff}
 /* signup: light-blue canvas, white card, Google only, then a quote */
 .au--su{--au-bg:#dbeeff}.au--su .au-main{flex-direction:column;align-items:center}
 .au--su .au-form{background:#fff;border-radius:16px;padding:32px;width:min(100%,432px);box-shadow:0 1px 3px rgba(9,30,66,.12)}
 .au--su .au-form h1{font-size:28px;line-height:32px;margin-bottom:24px;letter-spacing:-.01em}
-.au--su .au-prov:not(.p-google){display:none}.au--su .au-prov.p-google{background:#f0f1f2;border-color:transparent}
+.au--su .au-prov.p-google{background:#f0f1f2;border-color:transparent}
 .au--su .au-demo,.au--su .au-links{display:none}
 .au-quote{max-width:330px;text-align:center;font-size:13px;line-height:19px;color:#292a2e;margin:26px auto 0;font-weight:500}
 @media (max-width:520px){.au--su .au-form{padding:24px 20px}.au--su .au-main{padding:24px 16px}}
