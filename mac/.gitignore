@@ -1,0 +1,6 @@
+.build/
+.vercel/
+.env.local
+secrets.env
+*.dmg
+.swiftpm/
