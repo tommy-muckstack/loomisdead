@@ -54,6 +54,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case "library": LibraryWindow.shared.show()
         case "settings": SettingsWindow.shared.show(tab: parts.count > 1 ? SettingsTab(rawValue: parts[1]) : nil)
         case "onboarding": PermissionsWindow.shared.show(reason: nil)
+        case "selftest":
+            // Records ~5 s with a pause in the middle, then stops (verifies capture + stitching).
+            let s = RecordingSession.shared
+            s.start()
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(6.5)); s.togglePause()
+                try? await Task.sleep(for: .seconds(1)); s.togglePause()
+                try? await Task.sleep(for: .seconds(2.5)); s.stop()
+            }
         case "video": if parts.count > 1, let v = Library.shared.video(id: parts[1]) ?? Library.shared.videos.first { VideoWindow.open(v) }
         default: ControlMenu.shared.open(from: statusItem?.button)
         }

@@ -12,7 +12,7 @@ final class PermissionsWindow: NSObject, NSWindowDelegate {
 
     func show(reason: Reason?) {
         if window == nil {
-            let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 560, height: 600), styleMask: [.titled, .closable, .fullSizeContentView], backing: .buffered, defer: false)
+            let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 580, height: 660), styleMask: [.titled, .closable, .fullSizeContentView], backing: .buffered, defer: false)
             w.titlebarAppearsTransparent = true; w.titleVisibility = .hidden; w.isReleasedWhenClosed = false; w.delegate = self
             w.isMovableByWindowBackground = true
             window = w
@@ -50,7 +50,7 @@ struct PermissionsView: View {
                 Text(reason == nil ? "Welcome to LoomIsDead" : "LoomIsDead needs one more thing").font(.system(size: 26, weight: .bold))
                 Text("Allow LoomIsDead permissions to capture your video and screen").font(.system(size: 15, weight: .semibold))
                 Text("Free, open source, no account. Record your screen and camera, then share a link in seconds.")
-                    .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: 400)
+                    .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: 420).fixedSize(horizontal: false, vertical: true)
             }.padding(.top, 44).padding(.bottom, 26)
             VStack(spacing: 10) {
                 row("Screen Recording", "display", "Capture your screen to show what you're working on.", granted: screen, highlight: reason == .screen, denied: !screen && UserDefaults.standard.bool(forKey: "askedScreen")) {
@@ -73,7 +73,7 @@ struct PermissionsView: View {
                 .buttonStyle(PrimaryButtonStyle(color: screen ? DS.blue : Color.gray.opacity(0.6))).frame(width: 300)
             Text("You can change these any time in System Settings → Privacy & Security.").font(.system(size: 11)).foregroundStyle(.tertiary).padding(.top, 10).padding(.bottom, 28)
         }
-        .frame(width: 560, height: 600)
+        .frame(width: 580, height: 660)
         .onReceive(poll) { _ in screen = Permissions.screenGranted; camera = Permissions.status(.video); mic = Permissions.status(.audio) }
     }
 
@@ -83,7 +83,7 @@ struct PermissionsView: View {
                 .background(RoundedRectangle(cornerRadius: 10).fill(DS.blue.opacity(0.12)))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.system(size: 14, weight: .semibold))
-                Text(detail).font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(detail).font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
             if granted { Label("Allowed", systemImage: "checkmark.circle.fill").font(.system(size: 12, weight: .semibold)).foregroundStyle(.green) }

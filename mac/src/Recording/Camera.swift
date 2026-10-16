@@ -11,6 +11,7 @@ final class Camera: NSObject, @unchecked Sendable {
     private var audioInput: AVCaptureDeviceInput?
     private let movieOutput = AVCaptureMovieFileOutput()
     private var finish: ((URL?, Error?) -> Void)?
+    private var started: CheckedContinuation<Void, Error>?
     private(set) var currentCameraID: String?
 
     /// Start (or switch) the preview to a camera. Pass nil to stop.
@@ -40,28 +41,38 @@ final class Camera: NSObject, @unchecked Sendable {
         }
     }
 
-    /// Camera Only mode: record the camera (+ mic) straight to a .mov file.
-    func startRecording(to url: URL, microphone: AVCaptureDevice?) async throws {
-        try await withCheckedThrowingContinuation { (c: CheckedContinuation<Void, Error>) in
+    /// Camera Only mode: attach the microphone ahead of time (reconfiguring the
+    /// session while recording would drop the first seconds of every segment).
+    func prepareMicrophone(_ microphone: AVCaptureDevice?) async {
+        await withCheckedContinuation { (c: CheckedContinuation<Void, Never>) in
             queue.async { [self] in
                 session.beginConfiguration()
                 if let audioInput { session.removeInput(audioInput); self.audioInput = nil }
                 if let microphone, let a = try? AVCaptureDeviceInput(device: microphone), session.canAddInput(a) { session.addInput(a); audioInput = a }
-                if !session.outputs.contains(movieOutput) {
-                    guard session.canAddOutput(movieOutput) else { session.commitConfiguration(); c.resume(throwing: AgentError("CAMERA", "The camera can't record right now.")); return }
-                    session.addOutput(movieOutput)
-                }
+                if !session.outputs.contains(movieOutput), session.canAddOutput(movieOutput) { session.addOutput(movieOutput) }
                 session.commitConfiguration()
                 if !session.isRunning { session.startRunning() }
-                guard videoInput != nil else { c.resume(throwing: AgentError("CAMERA", "No camera is available.")); return }
-                if let conn = movieOutput.connection(with: .video), conn.isVideoMirroringSupported {
-                    conn.automaticallyAdjustsVideoMirroring = false; conn.isVideoMirrored = false
-                }
-                movieOutput.startRecording(to: url, recordingDelegate: self)
                 c.resume()
             }
         }
     }
+
+    /// Record the camera (+ mic) to a .mov file. Returns once frames are being written.
+    func startRecording(to url: URL) async throws {
+        try await withCheckedThrowingContinuation { (c: CheckedContinuation<Void, Error>) in
+            queue.async { [self] in
+                guard videoInput != nil, session.outputs.contains(movieOutput) else { c.resume(throwing: AgentError("CAMERA", "No camera is available.")); return }
+                if let conn = movieOutput.connection(with: .video), conn.isVideoMirroringSupported {
+                    conn.automaticallyAdjustsVideoMirroring = false; conn.isVideoMirrored = false
+                }
+                started = c
+                movieOutput.startRecording(to: url, recordingDelegate: self)
+            }
+        }
+    }
+
+    func pauseRecording() { queue.async { [self] in if movieOutput.isRecording, !movieOutput.isRecordingPaused { movieOutput.pauseRecording() } } }
+    func resumeRecording() { queue.async { [self] in if movieOutput.isRecordingPaused { movieOutput.resumeRecording() } } }
 
     func stopRecording() async -> URL? {
         await withCheckedContinuation { (c: CheckedContinuation<URL?, Never>) in
@@ -75,15 +86,14 @@ final class Camera: NSObject, @unchecked Sendable {
 }
 
 extension Camera: AVCaptureFileOutputRecordingDelegate {
+    func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+        let c = started; started = nil; c?.resume()
+    }
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         // AVFoundation reports "stopped" as an error with the file still written.
         let ok = error == nil || ((error as NSError?)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool ?? false)
         let f = finish; finish = nil
-        queue.async { [self] in
-            session.beginConfiguration()
-            if let audioInput { session.removeInput(audioInput); self.audioInput = nil }
-            session.commitConfiguration()
-        }
+        if let c = started { started = nil; c.resume(throwing: error ?? AgentError("CAMERA", "The camera couldn't start recording.")) }
         f?(ok ? outputFileURL : nil, error)
     }
 }

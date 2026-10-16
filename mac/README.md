@@ -27,7 +27,7 @@ Requires macOS 15+ and Xcode 16+.
 
 ```bash
 ./scripts/run-dev.sh                       # build, bundle, sign, launch
-LID_ROUTE=library ./scripts/run-dev.sh     # open a screen: menu | library | settings[:video|preferences|about] | onboarding | video:<id>
+LID_ROUTE=library ./scripts/run-dev.sh     # open a screen: menu | library | settings[:video|preferences|about] | onboarding | video:<id> | selftest (records ~5 s with a pause)
 swift test
 ```
 

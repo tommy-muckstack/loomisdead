@@ -94,6 +94,7 @@ final class RecordingSession: NSObject, ObservableObject {
 
     private func runCountdown() {
         countdownTask = Task { @MainActor in
+            if mode == .camera { let s = SettingsStore.shared; await Camera.shared.prepareMicrophone(s.micOn ? Devices.shared.microphone(for: s.microphoneID) : nil) }
             if SettingsStore.shared.showCountdown {
                 guard await CountdownOverlay.run() else { if state == .countdown { cancelNow() }; return }
             }
@@ -116,7 +117,7 @@ final class RecordingSession: NSObject, ObservableObject {
                 screenSegment = seg; segments.append(url)
             } else {
                 let url = part.appendingPathComponent(UUID().uuidString + ".mov")
-                try await Camera.shared.startRecording(to: url, microphone: mic)
+                try await Camera.shared.startRecording(to: url)
                 segments.append(url)
             }
             let first = state == .countdown
@@ -131,7 +132,7 @@ final class RecordingSession: NSObject, ObservableObject {
 
     private func endSegment() async {
         if let seg = screenSegment { await seg.stop(); screenSegment = nil }
-        else if mode == .camera { _ = await Camera.shared.stopRecording() }
+        else if mode == .camera { Camera.shared.resumeRecording(); _ = await Camera.shared.stopRecording() }
         if let st = segmentStart { banked += Date().timeIntervalSince(st) }
         segmentStart = nil; elapsed = banked
     }
@@ -153,10 +154,18 @@ final class RecordingSession: NSObject, ObservableObject {
         case .recording:
             state = .paused; onStateChange?(); ticker?.invalidate(); ClickHighlight.shared.stop()
             if SettingsStore.shared.playSounds { Sounds.pause() }
-            Task { await endSegment() }
+            if mode == .camera {
+                // One continuous file: the movie output pauses in place (restarting it costs ~2 s).
+                Camera.shared.pauseRecording()
+                if let st = segmentStart { banked += Date().timeIntervalSince(st) }; segmentStart = nil; elapsed = banked
+            } else { Task { await endSegment() } }
             Analytics.track("app_recording_paused")
         case .paused:
-            Task { await startSegment() }
+            if mode == .camera {
+                Camera.shared.resumeRecording(); segmentStart = Date()
+                state = .recording; onStateChange?(); startTicker()
+                if SettingsStore.shared.playSounds { Sounds.start() }
+            } else { Task { await startSegment() } }
         default: break
         }
     }
