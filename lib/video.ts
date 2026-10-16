@@ -3,9 +3,10 @@ export const LIMITS = { bytes: (Number(process.env.NEXT_PUBLIC_MAX_UPLOAD_MB) ||
 export const REACTIONS = ["👍", "❤️", "😂", "🎉", "👏", "🔥"] as const;
 export type Reaction = (typeof REACTIONS)[number];
 export type Comment = { id: string; name: string; text: string; at: number; createdAt: string; userId: string | null };
-export type VideoMeta = { id: string; ownerId: string | null; ownerName: string; title: string; duration: number; size: number; type: string; hasThumb: boolean; createdAt: string; views: number; comments: Comment[]; reactions: { emoji: Reaction; at: number }[]; deleteKey: string };
-export type PublicVideo = Omit<VideoMeta, "deleteKey" | "ownerId">;
-export const toPublic = ({ deleteKey: _k, ownerId: _o, ...rest }: VideoMeta): PublicVideo => rest;
+export type VideoMeta = { id: string; ownerId: string | null; ownerName: string; title: string; duration: number; size: number; type: string; hasThumb: boolean; createdAt: string; views: number; comments: Comment[]; reactions: { emoji: Reaction; at: number }[]; deleteKey: string; blobUrl?: string };
+// blobUrl: set for videos the Mac app uploaded straight to Vercel Blob (lib/direct-upload.ts); bytes are not in lib/store.ts then.
+export type PublicVideo = Omit<VideoMeta, "deleteKey" | "ownerId" | "blobUrl">;
+export const toPublic = ({ deleteKey: _k, ownerId: _o, blobUrl: _b, ...rest }: VideoMeta): PublicVideo => rest;
 
 const ALPHA = "abcdefghijkmnpqrstuvwxyz23456789";
 export function genId(rand: () => number = Math.random, len = 12): string { let s = ""; for (let i = 0; i < len; i++) s += ALPHA[Math.floor(rand() * ALPHA.length)]; return s; }

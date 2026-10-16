@@ -37,7 +37,7 @@ export function Watch({ video: initial, isOwner, viewer, justRecorded }: { video
   };
   const delComment = async (cid: string) => { const r = await fetch(`${BP}/api/videos/${v.id}/comments?cid=${cid}`, { method: "DELETE" }); if (r.ok) setV(x => ({ ...x, comments: x.comments.filter(c => c.id !== cid) })); };
   const saveTitle = async () => { const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ title }) }); if (r.ok) { const j = await r.json(); setV(j.video); setTitle(j.video.title); setEditing(false); } };
-  const del = async () => { if (!confirm("Delete this video? The link will stop working.")) return; const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "DELETE" }); if (r.ok) router.push("/app"); };
+  const del = async () => { if (!confirm("Delete this video? The link will stop working.")) return; const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "DELETE" }); if (r.ok) router.push("/"); };
   const copy = async () => { try { await navigator.clipboard.writeText(link); } catch { /* ignore */ } setCopied(true); };
 
   const pctOf = (s: number) => (dur ? Math.min(100, (s / dur) * 100) : 0);
@@ -62,7 +62,7 @@ export function Watch({ video: initial, isOwner, viewer, justRecorded }: { video
         {editing ? <form className="lm-titleedit" onSubmit={e => { e.preventDefault(); void saveTitle(); }}><input className="ids-input" aria-label="Video title" value={title} maxLength={LIMITS.title} onChange={e => setTitle(e.target.value)} autoFocus /><button className="ids-btn ids-btn--primary ids-btn--sm">Save</button><button type="button" className="ids-btn ids-btn--ghost ids-btn--sm" onClick={() => { setTitle(v.title); setEditing(false); }}>Cancel</button></form>
           : <h1 className="ids-h2 lm-title" data-testid="title">{v.title}</h1>}
         <p className="ids-muted lm-sub"><span className="lm-avatar" aria-hidden>{v.ownerName.slice(0, 1).toUpperCase()}</span>{v.ownerName} · {timeAgo(v.createdAt)} · <span data-testid="views">{viewsLabel(v.views)}</span></p>
-        <div className="lm-actions"><button className="ids-btn ids-btn--primary ids-btn--sm" onClick={copy}>{copied ? "Link copied!" : "Copy link"}</button><a className="ids-btn ids-btn--outline ids-btn--sm" href={`${BP}/api/videos/${v.id}/media`} download={`${v.title}.${v.type === "video/mp4" ? "mp4" : "webm"}`}>Download</a>
+        <div className="lm-actions"><button className="ids-btn ids-btn--primary ids-btn--sm" onClick={copy}>{copied ? "Link copied!" : "Copy link"}</button><a className="ids-btn ids-btn--outline ids-btn--sm" href={`${BP}/api/videos/${v.id}/media?download=1`} download={`${v.title}.${v.type === "video/mp4" ? "mp4" : v.type === "video/quicktime" ? "mov" : "webm"}`}>Download</a>
           {isOwner && <><button className="ids-btn ids-btn--outline ids-btn--sm" onClick={() => setEditing(true)}>Rename</button><button className="ids-btn ids-btn--ghost ids-btn--sm" onClick={del}>Delete</button></>}</div>
       </div>
     </div>

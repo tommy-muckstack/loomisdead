@@ -14,5 +14,3 @@ export async function currentUser(): Promise<SessionUser | null> {
   const g = guestEnabled() ? verifyGuest(jar.get(GUEST_COOKIE)?.value) : null;
   return g ? { id: g, name: "Guest", email: "", demo: false, guest: true } : null;
 }
-/** Where to send someone with no session: straight into the app as a guest (or to login when guests are off). */
-export const entryRedirect = (next = "/app") => guestEnabled() ? `/api/session/guest?next=${encodeURIComponent(next)}` : `/login?callbackUrl=${encodeURIComponent(next)}`;
