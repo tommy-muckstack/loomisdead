@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { validateDirectRequest, directPathname, blobHostFromToken, checkBlobUrl, DIRECT } from "@/lib/direct-upload";
 import { toPublic, type VideoMeta } from "@/lib/video";
 
-const HOST = "mehb0egufgtw22wb.public.blob.vercel-storage.com";
+const HOST = "teststore.public.blob.vercel-storage.com";
 describe("direct upload request", () => {
   it("accepts an MP4 up to 500 MB", () => {
     expect(validateDirectRequest({ size: 1024, contentType: "video/mp4" })).toBeNull();
@@ -24,7 +24,7 @@ describe("direct upload request", () => {
 
 describe("blob URL check", () => {
   it("derives the public host from the read-write token", () => {
-    expect(blobHostFromToken("vercel_blob_rw_Mehb0eGufgtW22wB_secretpart")).toBe(HOST);
+    expect(blobHostFromToken("vercel_blob_rw_TestStore_x")).toBe(HOST);
     expect(blobHostFromToken(undefined)).toBeNull(); expect(blobHostFromToken("nope")).toBeNull();
   });
   it("accepts only our store, https, under videos/, with an issued-looking name", () => {
