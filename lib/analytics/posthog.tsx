@@ -38,7 +38,7 @@ async function client(): Promise<PH | null> {
     const debug = process.env.NODE_ENV !== "production" && typeof localStorage !== "undefined" && localStorage.getItem("isdead_ph_debug") === "1";
     p.init(KEY, {
       api_host: `${location.origin}${BP}/ingest`, ui_host: UI_HOST,
-      capture_pageview: false, capture_pageleave: true, autocapture: false, disable_session_recording: true, capture_heatmaps: false, capture_performance: false, before_send: scrub,
+      capture_pageview: false, capture_pageleave: true, autocapture: false, disable_session_recording: true, capture_heatmaps: false, capture_performance: false, capture_dead_clicks: false, capture_exceptions: false, disable_surveys: true, before_send: scrub,
       persistence: "localStorage+cookie", person_profiles: "always", debug, opt_out_useragent_filter: debug,
     });
     // Every IsDead app shares the yourappisdead.com cookie, and super properties persist in it: clear other apps'
@@ -60,10 +60,10 @@ export async function trackNow(event: EventName, props: Props = {}) {
 }
 /** Signed-in users are identified by Firebase uid (shared across the family). Guests and demo sessions never are. */
 export function identify(uid: string, accountType: "firebase" | "guest" | "demo") {
-  void client().then(p => { if (!p) return; if (accountType === "firebase") p.identify(uid, { account_type: accountType }); else p.register({ account_type: accountType }); });
+  void client().then(p => { if (!p) return; p.register({ account_type: accountType }); if (accountType === "firebase") p.identify(uid, { account_type: accountType }); });
 }
 // reset() wipes super properties too, so put this app's back straight away.
-export function resetIdentity() { void client().then(p => { p?.reset(); p?.register(superProps(surfaceOf(location.pathname))); }); }
+export function resetIdentity() { void client().then(p => { p?.reset(); p?.register({ ...superProps(surfaceOf(location.pathname)), env: process.env.NODE_ENV === "production" ? "production" : "development" }); }); }
 /** Mount once in the root layout: boots the client and sends a $pageview per route change. */
 export function Analytics() {
   const path = usePathname();

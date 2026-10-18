@@ -25,4 +25,4 @@ export const EVENT_PREFIXES = ["app_", "landing_"] as const;
 /** Super properties every event carries (yourappisdead/ANALYTICS.md §1). */
 export const superProps = (surface: Surface) => ({ product: APP, surface, platform: "web" as const });
 /** Super properties older IsDead taxonomies persisted in the shared yourappisdead.com cookie. Unregistered at boot. */
-export const LEGACY_PROPS = ["app", "app_family", "base_path", "suite_id", "app_id", "schema_version", "source", "site_id", "environment"] as const;
+export const LEGACY_PROPS = ["app", "app_family", "base_path", "suite_id", "app_id", "schema_version", "source", "site_id", "environment", "ads_blocked", "account_type"] as const;
