@@ -9,4 +9,7 @@ export default {
   async redirects() {
     return ["/app", "/app/:path*", "/login", "/pricing", "/compare", "/api/session/demo", "/api/session/logout"].map((source) => ({ source, destination: "/", permanent: true }));
   },
+  // PostHog reverse proxy (<basePath>/ingest → us.i.posthog.com) so ad blockers don't drop analytics.
+  skipTrailingSlashRedirect: true,
+  async rewrites() { return [{ source: "/ingest/static/:path*", destination: "https://us-assets.i.posthog.com/static/:path*" }, { source: "/ingest/:path*", destination: "https://us.i.posthog.com/:path*" }]; },
 };
