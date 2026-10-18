@@ -15,4 +15,9 @@ describe("analytics privacy", () => {
     const e = scrub({ event: "$pageview", properties: { $current_url: "https://yourappisdead.com/loomisdead/v/abc123?q=secret#h", title: "Someone's file", n: 1 } });
     expect(e.properties).toEqual({ $current_url: "https://yourappisdead.com/loomisdead/v/:id", n: 1 });
   });
+  it("cleans every URL-like key, including nested $set / $set_once person properties", () => {
+    const e = scrub({ event: "$pageview", properties: { $session_entry_url: "https://yourappisdead.com/loomisdead/v/abc123?ref=x#y", $session_entry_pathname: "/loomisdead/v/abc123", $set_once: { $initial_current_url: "https://yourappisdead.com/loomisdead/v/abc123?utm_source=x" } }, $set: { $current_url: "https://yourappisdead.com/loomisdead/?q=1" } });
+    expect(e.properties.$session_entry_url).toBe("https://yourappisdead.com/loomisdead/v/:id"); expect(e.properties.$session_entry_pathname).toBe("/loomisdead/v/:id");
+    expect(e.properties.$set_once.$initial_current_url).toBe("https://yourappisdead.com/loomisdead/v/:id"); expect(e.$set.$current_url).toBe("https://yourappisdead.com/loomisdead/");
+  });
 });
