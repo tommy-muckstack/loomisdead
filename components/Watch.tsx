@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BP } from "@/lib/basepath";
+import { track, EVENTS } from "@/lib/analytics";
 import { REACTIONS, formatTime, timeAgo, viewsLabel, sortComments, reactionCounts, LIMITS, type PublicVideo, type Comment } from "@/lib/video";
 
 const SPEEDS = [0.5, 1, 1.25, 1.5, 2];
@@ -15,10 +16,12 @@ export function Watch({ video: initial, isOwner, viewer, justRecorded }: { video
   const vid = useRef<HTMLVideoElement>(null); const bar = useRef<HTMLDivElement>(null); const counted = useRef(false); const stage = useRef<HTMLDivElement>(null); const kid = useRef(0);
   const link = typeof location === "undefined" ? "" : `${location.origin}${BP}/v/${v.id}`;
   const comments = useMemo(() => sortComments(v.comments), [v.comments]); const counts = reactionCounts(v.reactions);
+  // Kinds and counts only: never the title, comment text or commenter name.
+  useEffect(() => { track(EVENTS.app_recording_viewed, { owner: isOwner, signed_in: !!viewer, comments: initial.comments.length, reactions: initial.reactions.length, just_recorded: justRecorded }); }, [initial.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (copied) { const x = setTimeout(() => setCopied(false), 4000); return () => clearTimeout(x); } }, [copied]);
 
   const onMeta = () => { const e = vid.current!; if (Number.isFinite(e.duration) && e.duration > 0) setDur(e.duration); else { /* MediaRecorder webm has no duration: keep the saved one */ } };
-  const onPlay = () => { setPlaying(true); if (!counted.current) { counted.current = true; const k = `lm-viewed:${v.id}`; if (!sessionStorage.getItem(k)) { sessionStorage.setItem(k, "1"); void fetch(`${BP}/api/videos/${v.id}/view`, { method: "POST" }).then(r => r.json()).then(j => { if (j.counted) setV(x => ({ ...x, views: j.views })); }).catch(() => {}); } } };
+  const onPlay = () => { setPlaying(true); if (!counted.current) { counted.current = true; track(EVENTS.app_recording_played, { owner: isOwner }); const k = `lm-viewed:${v.id}`; if (!sessionStorage.getItem(k)) { sessionStorage.setItem(k, "1"); void fetch(`${BP}/api/videos/${v.id}/view`, { method: "POST" }).then(r => r.json()).then(j => { if (j.counted) setV(x => ({ ...x, views: j.views })); }).catch(() => {}); } } };
   const toggle = () => { const e = vid.current!; if (e.paused) void e.play(); else e.pause(); };
   const seekTo = (s: number, play = false) => { const e = vid.current!; e.currentTime = Math.max(0, Math.min(s, dur)); setT(e.currentTime); if (play) void e.play(); };
   const scrub = (clientX: number) => { const r = bar.current!.getBoundingClientRect(); seekTo(((clientX - r.left) / r.width) * dur); };
@@ -27,18 +30,18 @@ export function Watch({ video: initial, isOwner, viewer, justRecorded }: { video
 
   const react = (emoji: string) => {
     const k = ++kid.current; setFloating(f => [...f, { k, e: emoji, x: 10 + Math.random() * 70 }]); setTimeout(() => setFloating(f => f.filter(x => x.k !== k)), 1800);
-    setV(x => ({ ...x, reactions: [...x.reactions, { emoji: emoji as never, at: t }] }));
+    setV(x => ({ ...x, reactions: [...x.reactions, { emoji: emoji as never, at: t }] })); track(EVENTS.app_reaction_added, { emoji });
     void fetch(`${BP}/api/videos/${v.id}/reactions`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ emoji, at: t }) }).catch(() => {});
   };
   const post = async () => {
     if (busy) return; setBusy(true); setErr("");
     const r = await fetch(`${BP}/api/videos/${v.id}/comments`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text, name, at: tl ? t : 0 }) }); const j = await r.json().catch(() => ({}));
-    setBusy(false); if (r.ok) { setV(x => ({ ...x, comments: [...x.comments, j.comment as Comment] })); setText(""); } else setErr(j.error ?? "Couldn't post your comment.");
+    setBusy(false); if (r.ok) { setV(x => ({ ...x, comments: [...x.comments, j.comment as Comment] })); setText(""); track(EVENTS.app_comment_added, { timestamped: tl, signed_in: !!viewer }); } else setErr(j.error ?? "Couldn't post your comment.");
   };
-  const delComment = async (cid: string) => { const r = await fetch(`${BP}/api/videos/${v.id}/comments?cid=${cid}`, { method: "DELETE" }); if (r.ok) setV(x => ({ ...x, comments: x.comments.filter(c => c.id !== cid) })); };
-  const saveTitle = async () => { const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ title }) }); if (r.ok) { const j = await r.json(); setV(j.video); setTitle(j.video.title); setEditing(false); } };
-  const del = async () => { if (!confirm("Delete this video? The link will stop working.")) return; const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "DELETE" }); if (r.ok) router.push("/"); };
-  const copy = async () => { try { await navigator.clipboard.writeText(link); } catch { /* ignore */ } setCopied(true); };
+  const delComment = async (cid: string) => { const r = await fetch(`${BP}/api/videos/${v.id}/comments?cid=${cid}`, { method: "DELETE" }); if (r.ok) { setV(x => ({ ...x, comments: x.comments.filter(c => c.id !== cid) })); track(EVENTS.app_comment_deleted, { owner: isOwner }); } };
+  const saveTitle = async () => { const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ title }) }); if (r.ok) { const j = await r.json(); setV(j.video); setTitle(j.video.title); setEditing(false); track(EVENTS.app_recording_renamed); } };
+  const del = async () => { if (!confirm("Delete this video? The link will stop working.")) return; const r = await fetch(`${BP}/api/videos/${v.id}`, { method: "DELETE" }); if (r.ok) { track(EVENTS.app_recording_deleted); router.push("/"); } };
+  const copy = async () => { try { await navigator.clipboard.writeText(link); } catch { /* ignore */ } setCopied(true); track(EVENTS.app_shared, { method: "copy_link" }); };
 
   const pctOf = (s: number) => (dur ? Math.min(100, (s / dur) * 100) : 0);
   return <div className="lm-watch" onKeyDown={onKey}>
@@ -62,7 +65,7 @@ export function Watch({ video: initial, isOwner, viewer, justRecorded }: { video
         {editing ? <form className="lm-titleedit" onSubmit={e => { e.preventDefault(); void saveTitle(); }}><input className="ids-input" aria-label="Video title" value={title} maxLength={LIMITS.title} onChange={e => setTitle(e.target.value)} autoFocus /><button className="ids-btn ids-btn--primary ids-btn--sm">Save</button><button type="button" className="ids-btn ids-btn--ghost ids-btn--sm" onClick={() => { setTitle(v.title); setEditing(false); }}>Cancel</button></form>
           : <h1 className="ids-h2 lm-title" data-testid="title">{v.title}</h1>}
         <p className="ids-muted lm-sub"><span className="lm-avatar" aria-hidden>{v.ownerName.slice(0, 1).toUpperCase()}</span>{v.ownerName} · {timeAgo(v.createdAt)} · <span data-testid="views">{viewsLabel(v.views)}</span></p>
-        <div className="lm-actions"><button className="ids-btn ids-btn--primary ids-btn--sm" onClick={copy}>{copied ? "Link copied!" : "Copy link"}</button><a className="ids-btn ids-btn--outline ids-btn--sm" href={`${BP}/api/videos/${v.id}/media?download=1`} download={`${v.title}.${v.type === "video/mp4" ? "mp4" : v.type === "video/quicktime" ? "mov" : "webm"}`}>Download</a>
+        <div className="lm-actions"><button className="ids-btn ids-btn--primary ids-btn--sm" onClick={copy}>{copied ? "Link copied!" : "Copy link"}</button><a className="ids-btn ids-btn--outline ids-btn--sm" href={`${BP}/api/videos/${v.id}/media?download=1`} onClick={() => track(EVENTS.app_recording_downloaded, { owner: isOwner })} download={`${v.title}.${v.type === "video/mp4" ? "mp4" : v.type === "video/quicktime" ? "mov" : "webm"}`}>Download</a>
           {isOwner && <><button className="ids-btn ids-btn--outline ids-btn--sm" onClick={() => setEditing(true)}>Rename</button><button className="ids-btn ids-btn--ghost ids-btn--sm" onClick={del}>Delete</button></>}</div>
       </div>
     </div>
